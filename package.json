@@ -1,0 +1,40 @@
+{
+  "name": "ens-reminder-bot",
+  "version": "1.0.0",
+  "description": "ENS domain expiry reminder bot using XMTP",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "elizaos start",
+    "dev": "elizaos dev",
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "jest --testNamePattern='Integration Tests'",
+    "test:unit": "jest --testPathIgnorePatterns='integration.test.ts'",
+    "test:mocks": "npx tsx src/test-mocks.ts",
+    "setup-env": "./scripts/setup-env.sh",
+    "setup-database": "node scripts/setup-database.js",
+    "deploy": "node scripts/deploy.js",
+    "deploy:test": "DEPLOY_ENVIRONMENT=testnet node scripts/deploy.js"
+  },
+  "dependencies": {
+    "@elizaos/core": "file:../../eliza/packages/core",
+    "@elizaos/plugin-bootstrap": "file:../../eliza/packages/plugin-bootstrap",
+    "ethers": "^6.13.0",
+    "@xmtp/xmtp-js": "^3.0.0", 
+    "node-cron": "^3.0.3",
+    "@supabase/supabase-js": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/node-cron": "^3.0.0",
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "dotenv": "^16.0.0",
+    "tsx": "^4.0.0"
+  }
+}
