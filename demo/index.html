@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENS Reminder Service - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background-color: #5f3dc4;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .demo-banner {
+            background-color: #f59e0b;
+            color: #000;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #5f3dc4;
+            margin-bottom: 1rem;
+        }
+        
+        .chat-container {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message.user {
+            background-color: #5f3dc4;
+            color: white;
+            margin-left: 20%;
+            text-align: right;
+        }
+        
+        .message.bot {
+            background-color: #e5e5e5;
+            margin-right: 20%;
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .chat-input button {
+            background-color: #5f3dc4;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+        
+        .chat-input button:hover {
+            background-color: #4c2da8;
+        }
+        
+        .reminder-list {
+            list-style: none;
+        }
+        
+        .reminder-item {
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .reminder-domain {
+            font-weight: 600;
+            color: #5f3dc4;
+        }
+        
+        .reminder-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .quick-action {
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            padding: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .quick-action:hover {
+            background-color: #e5e7eb;
+            transform: translateY(-2px);
+        }
+        
+        .features {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .features h3 {
+            color: #5f3dc4;
+            margin-bottom: 1rem;
+        }
+        
+        .features ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .features li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-banner">
+        🎭 Demo Mode - All features are simulated for testing
+    </div>
+    
+    <div class="header">
+        <div class="container">
+            <h1>ENS Reminder Service</h1>
+            <p>Never lose your ENS domain again! Get XMTP reminders before expiry.</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="main-content">
+            <div class="card">
+                <h2>Chat with ENS Bot</h2>
+                <div class="chat-container">
+                    <div class="messages" id="messages">
+                        <div class="message bot">
+                            👋 Hello! I'm the ENS Reminder Bot. I can help you set up reminders for your ENS domains. Try asking me to check a domain or set a reminder!
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="messageInput" placeholder="Type a message..." />
+                        <button onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <div class="quick-action" onclick="quickAction('check vitalik.eth')">
+                        Check vitalik.eth
+                    </div>
+                    <div class="quick-action" onclick="quickAction('set reminder for mydomain.eth')">
+                        Set Reminder
+                    </div>
+                    <div class="quick-action" onclick="quickAction('list my reminders')">
+                        List Reminders
+                    </div>
+                    <div class="quick-action" onclick="quickAction('help')">
+                        Get Help
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Active Reminders</h2>
+                <ul class="reminder-list" id="reminderList">
+                    <li class="reminder-item">
+                        <div>
+                            <div class="reminder-domain">vitalik.eth</div>
+                            <div class="reminder-date">Expires: May 4, 2045</div>
+                        </div>
+                        <div class="reminder-date">30 days before</div>
+                    </li>
+                    <li class="reminder-item">
+                        <div>
+                            <div class="reminder-domain">demo.eth</div>
+                            <div class="reminder-date">Expires: Dec 25, 2024</div>
+                        </div>
+                        <div class="reminder-date">7 days before</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="features">
+            <h3>How It Works</h3>
+            <ul>
+                <li>Connect via XMTP to receive domain expiry notifications</li>
+                <li>Set custom reminder intervals (7, 30, 60 days before expiry)</li>
+                <li>Monitor multiple ENS domains with one bot</li>
+                <li>Automatic daily checks for upcoming expirations</li>
+                <li>No registration required - just your wallet address</li>
+            </ul>
+        </div>
+        
+        <div class="features">
+            <h3>Demo Features</h3>
+            <ul>
+                <li>Simulated XMTP messaging (no wallet connection needed)</li>
+                <li>Mock ENS domain lookups with sample data</li>
+                <li>Interactive chat interface with bot responses</li>
+                <li>Sample reminders to demonstrate functionality</li>
+                <li>All data stored locally in your browser</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Demo reminders stored in localStorage
+        let reminders = JSON.parse(localStorage.getItem('ens_demo_reminders') || '[]');
+        
+        // Mock ENS domains data
+        const mockDomains = {
+            'vitalik.eth': { expires: '2045-05-04', owner: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' },
+            'demo.eth': { expires: '2024-12-25', owner: '0x742d35Cc6634C0532925a3b844Bc9e7595f89495' },
+            'example.eth': { expires: '2025-03-15', owner: '0x742d35Cc6634C0532925a3b844Bc9e7595f89495' },
+            'test.eth': { expires: '2024-11-30', owner: '0x742d35Cc6634C0532925a3b844Bc9e7595f89495' }
+        };
+        
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Simulate bot response
+            setTimeout(() => {
+                const response = generateBotResponse(message);
+                addMessage(response, 'bot');
+            }, 1000);
+        }
+        
+        function addMessage(text, sender) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.textContent = text;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function generateBotResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            if (lowerMessage.includes('check') && lowerMessage.includes('.eth')) {
+                const domain = extractDomain(message);
+                if (domain && mockDomains[domain]) {
+                    const data = mockDomains[domain];
+                    const expiryDate = new Date(data.expires);
+                    const daysUntil = Math.floor((expiryDate - new Date()) / (1000 * 60 * 60 * 24));
+                    return `📊 ${domain} expires on ${expiryDate.toLocaleDateString()} (${daysUntil} days from now). Would you like to set a reminder?`;
+                }
+                return `❌ Sorry, I couldn't find information for that domain. Try checking vitalik.eth or demo.eth`;
+            }
+            
+            if (lowerMessage.includes('set reminder') || lowerMessage.includes('remind me')) {
+                const domain = extractDomain(message);
+                if (domain) {
+                    addReminder(domain);
+                    return `✅ Reminder set! I'll notify you 30 days before ${domain} expires. You can say "list my reminders" to see all active reminders.`;
+                }
+                return '🤔 Please specify which domain you want to set a reminder for. Example: "set reminder for vitalik.eth"';
+            }
+            
+            if (lowerMessage.includes('list') && lowerMessage.includes('reminder')) {
+                if (reminders.length === 0) {
+                    return '📋 You have no active reminders. Try saying "set reminder for demo.eth" to create one!';
+                }
+                let list = '📋 Your active reminders:\n';
+                reminders.forEach(r => {
+                    list += `\n• ${r.domain} - Reminder ${r.daysBefore} days before expiry`;
+                });
+                return list;
+            }
+            
+            if (lowerMessage.includes('help')) {
+                return `🤖 I can help you with:
+• Check domain expiry: "check vitalik.eth"
+• Set reminders: "set reminder for demo.eth"
+• List reminders: "list my reminders"
+• Remove reminders: "remove reminder for demo.eth"
+
+Try one of these commands!`;
+            }
+            
+            if (lowerMessage.includes('remove reminder')) {
+                const domain = extractDomain(message);
+                if (domain) {
+                    removeReminder(domain);
+                    return `✅ Reminder for ${domain} has been removed.`;
+                }
+                return '🤔 Please specify which reminder to remove.';
+            }
+            
+            return "🤔 I'm not sure what you're asking. Try 'help' to see what I can do, or ask me to 'check vitalik.eth' to see domain information.";
+        }
+        
+        function extractDomain(message) {
+            const match = message.match(/(\w+\.eth)/i);
+            return match ? match[1].toLowerCase() : null;
+        }
+        
+        function addReminder(domain) {
+            if (!reminders.find(r => r.domain === domain)) {
+                reminders.push({
+                    domain: domain,
+                    daysBefore: 30,
+                    created: new Date().toISOString()
+                });
+                localStorage.setItem('ens_demo_reminders', JSON.stringify(reminders));
+                updateReminderList();
+            }
+        }
+        
+        function removeReminder(domain) {
+            reminders = reminders.filter(r => r.domain !== domain);
+            localStorage.setItem('ens_demo_reminders', JSON.stringify(reminders));
+            updateReminderList();
+        }
+        
+        function updateReminderList() {
+            const list = document.getElementById('reminderList');
+            
+            if (reminders.length === 0) {
+                list.innerHTML = '<li style="text-align: center; color: #666; padding: 2rem;">No active reminders</li>';
+                return;
+            }
+            
+            list.innerHTML = reminders.map(reminder => {
+                const domainData = mockDomains[reminder.domain] || { expires: '2025-01-01' };
+                const expiryDate = new Date(domainData.expires);
+                
+                return `
+                    <li class="reminder-item">
+                        <div>
+                            <div class="reminder-domain">${reminder.domain}</div>
+                            <div class="reminder-date">Expires: ${expiryDate.toLocaleDateString()}</div>
+                        </div>
+                        <div class="reminder-date">${reminder.daysBefore} days before</div>
+                    </li>
+                `;
+            }).join('');
+        }
+        
+        function quickAction(message) {
+            document.getElementById('messageInput').value = message;
+            sendMessage();
+        }
+        
+        // Handle enter key in input
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Initialize reminder list
+        updateReminderList();
+        
+        // Add some default reminders for demo
+        if (reminders.length === 0) {
+            addReminder('vitalik.eth');
+            addReminder('demo.eth');
+        }
+    </script>
+</body>
+</html>
